@@ -1,4 +1,3 @@
-package: git.tmaws.io/kubernetes/usage-log
+package: github.com/ticketmaster/kubernetes-usage-log
 import:
 - package: github.com/spf13/cobra
-- package: github.com/spf13/viper
