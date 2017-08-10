@@ -29,13 +29,10 @@ import (
 	"git.tmaws.io/kubernetes/usage-log/core/pkg/catalog"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"k8s.io/client-go/kubernetes"
 	restapi "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
-
-var cfgFile string
 
 type RootConfigT struct {
 	internal        bool
@@ -67,17 +64,10 @@ func Execute() {
 
 func init() {
 	RootConfig = new(RootConfigT)
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
 
 	kubeconfigDefault := filepath.Join(homeDir(), ".kube", "config")
 
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.usage-log.yaml)")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 	RootCmd.Flags().BoolVar(&RootConfig.internal, "internal", true, "Running internal to cluster")
 	RootCmd.Flags().StringVar(&RootConfig.clusterID, "id", "", "Unique ID to represent the cluster")
 	RootCmd.Flags().Int64Var(&RootConfig.usagePeriod, "usagePeriod", 60, "Number of seconds per collection interval")
@@ -89,19 +79,6 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" { // enable ability to specify config file via flag
-		viper.SetConfigFile(cfgFile)
-	}
-
-	viper.SetConfigName(".usage-log") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")      // adding home directory as first search path
-	viper.AutomaticEnv()              // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
-
 	if RootConfig.clusterID == "" {
 		log.Fatal("A cluster id must be provided.")
 	}
