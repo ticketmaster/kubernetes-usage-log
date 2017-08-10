@@ -1,3 +1,3 @@
-package: github.com/ticketmaster/kubernetes-usage-log
+package: github.com/Ticketmaster/kubernetes-usage-log
 import:
 - package: github.com/spf13/cobra

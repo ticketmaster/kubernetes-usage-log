@@ -26,7 +26,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/ticketmaster/kubernetes-usage-log/core/pkg/catalog"
+	"github.com/Ticketmaster/kubernetes-usage-log/core/pkg/catalog"
 
 	"github.com/spf13/cobra"
 	"k8s.io/client-go/kubernetes"

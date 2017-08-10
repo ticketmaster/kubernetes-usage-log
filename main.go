@@ -20,7 +20,7 @@
 
 package main
 
-import "github.com/ticketmaster/kubernetes-usage-log/cmd"
+import "github.com/Ticketmaster/kubernetes-usage-log/cmd"
 
 func main() {
 	cmd.Execute()
