@@ -23,6 +23,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 
@@ -40,6 +41,7 @@ type RootConfigT struct {
 	usagePeriod     int64
 	kubeconfig      string
 	destinationPath string
+	port            string
 	config          *restapi.Config
 }
 
@@ -73,6 +75,7 @@ func init() {
 	RootCmd.Flags().Int64Var(&RootConfig.usagePeriod, "usagePeriod", 60, "Number of seconds per collection interval")
 	RootCmd.Flags().StringVar(&RootConfig.kubeconfig, "kubeconfig", kubeconfigDefault, "absolute path to the kubeconfig file")
 	RootCmd.Flags().StringVarP(&RootConfig.destinationPath, "destinationPath", "d", "logs/", "Destination path for usage logs")
+	RootCmd.Flags().StringVarP(&RootConfig.port, "port", "p", "8080", "HTTP port")
 
 	cobra.OnInitialize(initConfig)
 }
@@ -101,8 +104,17 @@ func run(cmd *cobra.Command, args []string) {
 	defer close(stopCatalog)
 	go catalog.GenerateCatalog(clientset, stopCatalog, RootConfig.clusterID, RootConfig.usagePeriod, RootConfig.destinationPath)
 
-	// Wait forever
-	select {}
+	http.Handle("/healthz", http.HandlerFunc(healthcheckHandler))
+	log.Printf("listening on %v...\n", RootConfig.port)
+	err = http.ListenAndServe(":"+RootConfig.port, nil)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func healthcheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte{})
 }
 
 func insideCluster() (config *restapi.Config) {
